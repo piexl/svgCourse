@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Paper</title>
+    <style>
+        *,html,body{margin:0; padding:0;}
+        html,body,#svg{
+            width:100%;
+            height:100%;
+            overflow:hidden;
+        }
+    </style>
+</head>
+<body>
+    <svg id="svg"></svg>
+    <script src="../assets/vendor/jquery-1.9.1.min.js"></script>
+    <script src="../assets/vendor/snap.svg/snap.svg-min.js"></script>
+    <script>
+        var Paper = function(){
+            var paper = this;
+            paper.Init = function(){
+                console.log('paper init');
+                var svg = Snap("#svg");
+                /**
+                 * 创建圆形
+                 * circle(cx, cy, r) 
+                 * @param {Number}  cx  表示中心点的x坐标
+                 * @param {Number}  cy  表示中心点的y坐标
+                 * @param {Number}  r   表示圆的半径大小
+                 */
+                svg.paper.circle(50, 50, 40);
+
+                /**
+                 * 创建圆形
+                 * ellipse(cx, cy, rx, ry)
+                 * @param {Number}  cx  表示中心点的x坐标
+                 * @param {Number}  cy  表示中心点的y坐标
+                 * @param {Number}  rx  表示椭圆水平方向的半径大小
+                 * @param {Number}  ry  表示椭圆垂直方向的半径大小
+                 */
+                svg.paper.ellipse(150, 50, 40, 30);
+
+                /**
+                 * 创建组
+                 * g([varargs])
+                 * @param {Arry}}  varargs 要组队的小伙伴们
+                 */
+                var c1 = svg.paper.circle(90, 250, 40).attr({
+                    fill: "red"
+                })
+                var c2 = svg.paper.circle(50, 290, 40).attr({
+                    fill: "blue"
+                })
+                var c3 = svg.paper.circle(130, 290, 40).attr({
+                    fill: "green"
+                })
+                var g = svg.paper.g(c1,c2,c3);
+
+                /**
+                 * 创建滤镜
+                 * filter(filstr)
+                 * @param {Number}  filstr  滤镜相关的SVG字符串片段
+                 *  关于混合模式具体参考：filstr https://blog.csdn.net/chy555chy/article/details/53364310
+                 *  feblend(混合)
+                 *      in、in2 标识为给定的滤镜原始输入：SourceGraphic | SourceAlpha | BackgroundImage | BackgroundAlpha | FillPaint | StrokePaint | <filter-primitive-reference>（注意：in在上层，in2在下层）
+                 *      mode 混合模式：normal | multiply | screen | darken | lighten
+                 *  feColorMatrix（RGBA颜色矩阵）
+                 *  feFlood（探照灯）
+                 *      （x，y）、width、height定义了绘制矩形的范围
+                 *      flood-color（探照灯 或 泛滥）颜色
+                 *      flood-opacity （探照灯 或 泛滥）透明度
+                 *  feGaussianBlur（高斯模糊） 
+                 *      in 标识为给定的滤镜原始输入 SourceGraphic | SourceAlpha | BackgroundImage | BackgroundAlpha | FillPaint | StrokePaint | <filter-primitive-reference>
+                 *      stdDeviation 模糊量
+                 *  feOffset（位移）
+                 *      dx 向右偏移量
+                 *      dy 向下偏移量
+                 */
+                var matrix = 'R 0 0 0 0 0 G 0 0 0 0 0 B 0 0 0 0 0 A 0';
+                var feblend = svg.paper.filter('<feblend in="SourceGraphic" in2="floodFill" mode="normal"/>');
+                var feFlood = svg.paper.filter('<feFlood x="10" y="110" width="80" height="80" flood-color="green" flood-opacity="0.5"/>');
+                var feGaussianBlur = svg.paper.filter('<feGaussianBlur in="BackgroundAlpha" stdDeviation="2"/>');
+                var feOffset = svg.paper.filter('<feOffset dx="200" dy="0"/>');
+                svg.paper.circle(50, 150, 40).attr({
+                    filter: feblend,
+                    fill:'red'
+                })
+                svg.paper.circle(50, 150, 40).attr({
+                    filter: feFlood
+                })
+                svg.paper.circle(150, 150, 40).attr({
+                    filter: feGaussianBlur
+                })
+                svg.paper.circle(50, 150, 40).attr({
+                    filter: feOffset
+                })
+
+                /**
+                * 创建渐变元素
+                * gradient(gradient)
+                * @param {String}} gradient 字符串。渐变描述符。
+                */
+                //线性渐变，相对，左上角到右下角，从黑色到红色再白色
+                var gradient1 = svg.paper.gradient("l(0, 0, 1, 1)#000-#f00-#fff");
+                //线性渐变，绝对，从(0,0)到100, 100, 从黑色到25%位置红色再到白色
+                var gradient2 = svg.paper.gradient("L(150, 400, 100, 100)#000-#f00:25-#fff");
+                //径向渐变，相对，从元素中心开始，半径为宽度的一本, 从黑色到白色。
+                var gradient3 = svg.paper.gradient("r(0.5, 0.5, 0.5)#000-#fff");
+                svg.paper.circle(50, 400, 40).attr({
+                    fill: gradient1
+                })
+                svg.paper.circle(150, 400, 40).attr({
+                    fill: gradient2
+                })
+                svg.paper.circle(250, 400, 40).attr({
+                    fill: gradient3
+                })
+
+                /**
+                * 创建图片
+                * image(src, x, y, width, height)
+                * @param {String}   src     图片的UR
+                * @param {Number}   x       x偏移位置
+                * @param {Number}   y       y偏移位置
+                * @param {Number}   width   图片的宽度
+                * @param {Number}   height  图片的高度
+                */
+                var image = svg.paper.image("http://panama.projects.dragontrail.cn/webs/panama/assets/images/butterfly_right.gif", 10, 450, 100, 100);
+
+                /**
+                * 创建线
+                * line(x1, y1, x2, y2)
+                * @param {Number}   x1      起始x坐标位置。
+                * @param {Number}   y1      起始y坐标位置
+                * @param {Number}   x2      结束x坐标位置
+                * @param {Number}   y2      结束y坐标位置
+                */
+                var line = svg.paper.line(120, 460, 200, 520).attr({
+                    stroke: "#000",
+                    strokeWidth: 5
+                });
+                
+                /**
+                * 创建路径
+                * path([pathString])
+                * @param {Number}   pathString      SVG格式路径字符串
+                * pathString 大小写的区别 大写表示绝对位置 | 小写表示相对位置
+                * 命令 名称 参数
+                * M moveto  移动到 (x y)+
+                * Z closepath  关闭路径 (none)
+                * L lineto  画线到 (x y)+
+                * H horizontal lineto  水平线到 x+
+                * V vertical lineto  垂直线到 y+
+                * C curveto  三次贝塞尔曲线到 (x1 y1 x2 y2 x y)+
+                * S smooth curveto  光滑三次贝塞尔曲线到 (x2 y2 x y)+
+                * Q quadratic Bézier curveto  二次贝塞尔曲线到 (x1 y1 x y)+
+                * T smooth quadratic Bézier curveto  光滑二次贝塞尔曲线到 (x y)+
+                * A elliptical arc  椭圆弧 (rx ry x-axis-rotation large-arc-flag sweep-flag x y)+
+                * R Catmull-Rom curveto*  Catmull-Rom曲线 x1 y1 (x y)+
+                */
+                var path = svg.paper.path("M400 30 l200 50 h100 v100 c20 10 200 10 30 60 s50 30 50 60 q20 10 30 60 t30 60 50 100 t-80 -20 r-30 60 -100 80 z").attr({
+                    stroke: "#000",
+                    strokeWidth: 5,
+                    fill:'none'
+                });
+
+                /**
+                * 创建折线
+                * polyline(...)
+                * @param {Arry}   points    数组。点坐标数组
+                * @param {}   varargs    表示点的可变参数
+                */
+                var line = svg.paper.polyline([10, 660, 120, 600, 220, 690, 320, 590]).attr({
+                    stroke: "#000",
+                    strokeWidth: 5,
+                    fill:'none'
+                });
+
+                /**
+                * 创建方形
+                * rect(x, y, width, height, [rx], [ry])
+                * @param {Number}   x       左上角x坐标位置
+                * @param {Number}   y       左上角y坐标位置
+                * @param {Number}   width   宽度
+                * @param {Number}   height  高度
+                * @param {Number}   rx      水平方向的圆角大小，默认是0
+                * @param {Number}   ry      垂直方向的圆角大小，默认是rx或0
+                */
+               var rect = svg.paper.rect(10, 700, 200, 100, 10);
+
+                /**
+                * 创建方形
+                * text(x, y, text)
+                * @param {Number}   x       x坐标位置
+                * @param {Number}   y       y坐标位置
+                * @param {String}   text    字符串或数组。要绘制的文本字符或者使用分隔的<tspan>嵌套进去的数组字符串
+                */
+                var text1 = svg.paper.text(10, 860, "Snap");
+                var text2 = svg.paper.text(10, 880, ["S","n","a","p"]);
+
+                /**
+                * 返回Paper的SVG代码
+                * toString()
+                */
+                console.log(svg.paper.toString());
+
+            }();
+        }
+        var Paper = new Paper();
+    </script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Element</title>
+    <style>
+        *,html,body{margin:0; padding:0;}
+        html,body,#app{
+            width:100%;
+            height:100%;
+            overflow:hidden;
+        }
+        #app{
+            display:flex;
+            flex-direction:row;
+        }
+        button{
+            padding:0.5em 1.5em;
+            background-color:#999;
+            color:#fff;
+            border-radius:3px;
+            display:inline-block;
+            margin:0.5em;
+        }
+        #controlPanel{
+            width:30%;
+            height:100%;
+            background-color:#f9f9f9;
+        }
+        #svg{
+            width:70%;
+            height:100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="controlPanel">
+            <button class="btn" id="after">after</button>
+            <button class="btn" id="before">before</button>
+            <button class="btn" id="append">append</button>
+            <button class="btn" id="prepend">prepend</button>
+            <button class="btn" id="parent">parent</button>
+            <button class="btn" id="animate">animate</button>
+            <button class="btn" id="asPX">asPX</button>
+            <button class="btn" id="attr">attr</button>
+            <button class="btn" id="clone">clone</button>
+            <button class="btn" id="data">data</button>
+            <button class="btn" id="removeData">removeData</button>
+        </div>
+        <svg id="svg"></svg>
+    </div>
+    
+    <script src="../assets/vendor/jquery-1.9.1.min.js"></script>
+    <script src="../assets/vendor/snap.svg/snap.svg-min.js"></script>
+    <script>
+        var Element = function(){
+            var element = this;
+            element.Init = function(){
+                console.log('element init');
+                var svg = Snap("#svg");
+                var circle1 = svg.paper.circle(50, 50, 40).attr({
+                    fill: "red"
+                });
+                var circle2 = svg.paper.circle(100, 50, 40).attr({
+                    fill: "blue"
+                });
+                var group = svg.paper.g().attr({
+                    transform:'matrix(1,0,0,1,200,0)',
+                })
+
+                /**
+                 * 元素后面增加元素
+                 * Element.after(el)
+                 * @param {Element | Set}   el   表示要附加的元素
+                 */
+                $('#after').click(function(){
+                    circle2.after(circle1);
+                });
+
+                /**
+                 * 元素前面增加元素
+                 * Element.before(el)
+                 * @param {Element | Set}   el   表示要附加的元素
+                 */
+                $('#before').click(function(){
+                    circle2.before(circle1);
+                });
+
+                /**
+                 * 元素中增加元素
+                 * Element.append(el)
+                 * @param {Element | Set}   el   表示要附加的元素
+                 */
+                $('#append').click(function(){
+                    group.append(circle1);
+                });
+
+                /**
+                 * 元素内部前置给定元素
+                 * Element.prepend(el)
+                 * @param {Element | Set}   el   表示要附加的元素
+                 */
+                $('#prepend').click(function(){
+                    group.prepend(circle2);
+                });
+
+                /**
+                 * 元素的父元素
+                 * Element.parent()
+                 * @param {Element | Set}   el   表示要附加的元素
+                 */
+                $('#parent').click(function(){
+                    console.log(circle1.parent());
+                });
+
+                /**
+                 * 元素动画
+                 * Element.animate(attrs, duration, [easing], [callback])
+                 * @param {Object}      attrs       描述属性的键值对
+                 * @param {Number}      duration    动画持续的时间，单位是毫秒
+                 * @param {Function}    easing      自定义的或者mina提供的缓动函数
+                 * @param {Function}    callback    动画结束时候的回调
+                 */
+                $('#animate').click(function(){
+                    var $this = $(this);
+                    circle1.animate({
+                        fill:'blue',
+                        r:80
+                    },2000,function(){
+                        console.log('elementAnimate end')
+                    })
+                });
+
+                /**
+                 * 获取元素的指定属性
+                 * Element.asPX(attr, [value])
+                 * @param {String}   attr   属性名称
+                 * @param {}         value  属性值
+                 */
+                $('#asPX').click(function(){
+                    console.log('circle1-asPX',circle1.asPX('r'))
+                });
+
+                /**
+                 * 获得或设置元素给定的属性值
+                 * Element.attr(...)
+                 * @param {Object}  params  希望设置的包含属性以及属性值的键值对
+                 * @param {String}  params  属性名
+                 */
+                $('#attr').click(function(){
+                    circle1.attr({
+                        fill: "#fc0",
+                        stroke: "#000",
+                        strokeWidth: 2,     // 驼峰命名...
+                        "fill-opacity": 0.5 // 或者短横符连接名称
+                    })
+                    console.log('circle1-atrr',circle1.attr());
+                    console.log('circle1-atrr',circle1.attr('strokeWidth'));
+                });
+
+                /**
+                 * 创建元素的克隆并插入在元素之后
+                 * Element.clone()
+                 * @param {Function}  handler  事件句柄
+                 */
+                $('#clone').click(function(){
+                    circle1.clone().attr({
+                        cx:200
+                    })
+                });
+
+                /**
+                 * 元素的数据存储与获取
+                 * Element.data(key, [value])
+                 * @param {String}  key    存储数据关键字
+                 * @param {Any}     value  存储的值
+                 */
+                $('#data').click(function(){
+                    circle1.data('author','pixel');
+                    console.log('circle1-data',circle1.data())
+                });
+
+                /**
+                 * 移除元素的数据
+                 * Element.removeData([key])
+                 * @param {String}  key    存储数据关键字，如果关键字未提供，则移除元素上存储的所有数据
+                 */
+                $('#removeData').click(function(){
+                    circle1.removeData('author');
+                    console.log('circle1-data',circle1.data())
+                });
+
+                /**
+                 * 元素点击事件
+                 * Element.click(handler)
+                 * @param {Function}   handler   事件句柄
+                 * 移除元素的点击事件处理程
+                 * Element.unclick(handler)
+                 */
+                circle1.click(function(){
+                    this.animate({
+                        fill: "red"
+                    }, 1000);
+                });
+
+                /**
+                 * 元素鼠标悬停事件
+                 * Element.hover(f_in, f_out, [icontext], [ocontext])
+                 * @param {Function}   f_in         进入的事件句柄
+                 * @param {Function}   f_out        进入的事件句柄
+                 * @param {Function}   icontext     进入事件句柄的上下文
+                 * @param {Function}   ocontext     出来事件句柄的上下文
+                 * 移除元素的hover事件处理程序
+                 * Element.unhover(f_in, f_out)
+                 * @param {Function}   f_in     进去的处理程序
+                 * @param {Function}   f_out    出来的处理程序
+                 */
+                circle2.hover(function(){
+                    this.animate({
+                        fill: "red"
+                    }, 500);
+                }, function(){
+                    this.animate({
+                        fill: "blue"
+                    }, 500);
+                });
+
+                /**
+                 * 元素点击事件
+                 * Element.dblclick(handler)
+                 * 移除元素的双击事件处理程序
+                 * Element.undblclick(handler)
+                 * @param {Function}   handler   事件句柄
+                 */
+                circle1.dblclick(function(){
+                    this.animate({
+                        fill: "red"
+                    }, 1000);
+                });
+
+                /**
+                 * 元素点击事件
+                 * Element.drag(onmove, onstart, onend, [mcontext], [scontext], [econtext])
+                 * @param {Function}   onmove       移动中的事件句柄
+                 *        @param {Number}   dx      距离鼠标开始点的x偏移
+                 *        @param {Number}   dy      距离鼠标开始点的y偏移
+                 *        @param {Number}   x       鼠标x位置
+                 *        @param {Number}   y       鼠标y位置
+                 *        @param {Object}   event   DOM事件对象
+                 * @param {Function}   onstart      拖拽开始时的事件句柄
+                 *        @param {Number}   x       鼠标x位置
+                 *        @param {Number}   y       鼠标y位置
+                 *        @param {Object}   event   DOM事件对象
+                 * @param {Function}   onend        拖拽结束时的事件句柄
+                 *        @param {Object}   event   DOM事件对象
+                 * @param {Object}     mcontext     移动事件上下文
+                 * @param {Object}     scontext     拖拽开始事件的上下文
+                 * @param {Object}     econtext     拖拽结束事件的上下文
+                 * 移除元素的所有拖拽事件与程序
+                 * Element.undrag()
+                 */
+                circle1.drag(function(dx,dy,x,y,event){
+                    var r = parseInt(this.attr('r'))
+                    this.attr({
+                        cx:dx+r,
+                        cy:dy+r
+                    });
+                },function(){
+                    console.log('onstart');
+                },function(){
+                    console.log('onend');
+                });
+
+
+            }();
+        }
+        var Element = new Element();
+    </script>
+</body>
+</html>
