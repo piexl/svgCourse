@@ -49,6 +49,10 @@
             <button class="btn" id="clone">clone</button>
             <button class="btn" id="data">data</button>
             <button class="btn" id="removeData">removeData</button>
+            <button class="btn" id="getBBox">getBBox</button>
+            <button class="btn" id="getPointAtLength">getPointAtLength</button>
+            <button class="btn" id="getSubpath">getSubpath</button>
+            <button class="btn" id="getTotalLength">getTotalLength</button>
         </div>
         <svg id="svg"></svg>
     </div>
@@ -66,6 +70,11 @@
                 });
                 var circle2 = svg.paper.circle(100, 50, 40).attr({
                     fill: "blue"
+                });
+                var path = svg.paper.path("M100 100 l90 90 c50 100 80 120 100 100").attr({
+                    stroke: "#000",
+                    strokeWidth: 5,
+                    fill:'none'
                 });
                 var group = svg.paper.g().attr({
                     transform:'matrix(1,0,0,1,200,0)',
@@ -133,6 +142,27 @@
                         console.log('elementAnimate end')
                     })
                 });
+
+                /**
+                 * 停止动画
+                 * Element.stop()
+                 * 停止当前元素的所有动画
+                 */
+
+                /**
+                 * 操纵当前元素的一组动画
+                 * Element.inAnim()
+                 * @return {Object}     anim 动画对象
+                 * @return {curStatus}  Number 动画对象
+                 * @return {Status}     function 获取或设置动画的状态
+                 * @return {Stop}       function 停止动画
+                 */
+                path.animate({
+                    stroke:'blue',
+                },1000)
+                setTimeout(function() {
+                    console.dir(path.inAnim());
+                }, 500);
 
                 /**
                  * 获取元素的指定属性
@@ -274,6 +304,137 @@
                     console.log('onend');
                 });
 
+                /**
+                 * 元素touchstart事件
+                 * Element.touchstart(handler)
+                 * 给元素添加touchstart事件
+                 * Element.untouchstart(handler)
+                 * 移除元素的untouchstart事件处理程序
+                 * Element.touchmove(handler)
+                 * 给元素添加touchmove事件
+                 * Element.touchend(handler)
+                 * 给元素添加touchend事件
+                 * Element.untouchend(handler)
+                 * 移除元素的untouchend事件处理程序
+                 * Element.touchcancel(handler)
+                 * 给元素添加touchcancel事件
+                 * Element.untouchcancel(handler)
+                 * 移除元素的untouchcancel事件处理程序
+                 * @param {Function}   handler   事件句柄
+                 */
+                circle2.touchstart(function(){
+                    console.log('touchstart');
+                });
+                
+
+                /**
+                * 鼠标事件
+                * Element.mousedown(handler)
+                * 给元素添加鼠标按下事件
+                * Element.mouseup(handler)
+                * 给元素添加鼠标按键抬起事件
+                * @param {Function}   handler   事件句柄
+                */
+                circle2.mousedown(function(){
+                    this.animate({
+                        fill: "#333"
+                    }, 1000);
+                });
+                circle2.mouseup(function(){
+                    this.animate({
+                        fill: "#000"
+                    }, 1000);
+                });
+
+                /**
+                * 鼠标事件
+                * Element.mousemove(handler)
+                * 给元素添加鼠标移动事件
+                * Element.mouseout(handler)
+                * 给元素添加鼠标移出事件
+                * Element.mouseover(handler)
+                * 给元素添加鼠标经过事件
+                * @param {Function}   handler   事件句柄
+                */
+
+
+                /**
+                * 获取元素的边界
+                * Element.getBBox()
+                * 返回给定元素的边界框描述
+                * @return {Object}  元素的边界描述
+                *      cx       {Number} 中心点x位置
+                *      cy       {Number} 中心点y位置
+                *      h        {Number} 高度
+                *      height   {Number} 高度
+                *      path     {String} 盒子的路径命令
+                *      r0       {Number} 完全封闭盒子圆半径
+                *      r1       {Number} 能闭合的最小圆半径
+                *      r2       {Number} 能闭合的最大圆半径
+                *      vb       {Number} 作为视窗盒子的命令
+                *      w        {Number} 宽度
+                *      width    {Number} 宽度
+                *      x2       {Number} 右侧的x位置值
+                *      x        {Number} 左侧的x位置值
+                *      y2       {Number} 底边缘的y位置值
+                *      y        {Number} 上边缘的y位置值
+                */
+                $('#getBBox').click(function(){
+                    console.log(circle2.getBBox());
+                });
+
+                /**
+                * 获取路径上给定长度的点坐标
+                * Element.getPointAtLength(length)
+                * 返回给定路径上给定长度的点坐标（仅适用于path元素）
+                */
+                $('#getPointAtLength').click(function(){
+                    console.log(path.getPointAtLength());
+                });
+
+                /**
+                * 指定起始结束长度上的子路径
+                * Element.getSubpath(from, to)
+                * 返回给定元素上指定起始结束长度上的子路径（仅适用于path元素）
+                * @param from {Number}  表长度，以像素为单位，从路径起点到该段的开始
+                * @param to   {Number}  表长度，以像素为单位，从路径起点到该段的终点
+                */
+                $('#getSubpath').click(function(){
+                    console.log(path.getSubpath(100, 300));
+                });
+
+                /**
+                * 获取路径的长度
+                * Element.getTotalLength()
+                * 以像素为单位，返回路径的长度（仅适用于path元素）
+                * @return {Number}  长度值  
+                */
+                $('#getTotalLength').click(function(){
+                    console.log(path.getTotalLength());
+                });
+
+                /**
+                * 返回元素内容的SVG代码
+                * Element.innerSVG()
+                * 返回元素内容的SVG代码。近似于HTML中的innerHTML方法
+                * @return {String}  SVG字符串代码
+                */
+                console.log(svg.innerSVG());
+
+                /**
+                * 返回元素内容的SVG代码
+                * Element.insertAfter(el)
+                * 插入当前元素到给定元素的后面。也就是Element到el的后面
+                * @param {String}  el 被插入的元素
+                */
+
+
+                /**
+                * 插入当前元素到给定元素的前面
+                * Element.insertBefore(el)
+                * 插入当前元素到给定元素的前面。也就是Element到el的前面
+                * @param {String}  el 被插入的元素
+                */
 
             }();
         }
